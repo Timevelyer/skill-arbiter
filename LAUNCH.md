@@ -3,7 +3,7 @@
 ## 当前准备状态（2026-11-23）
 
 - 机器可执行的结构检查、CI 作业与打包已完成并通过；`rubric-gate` 已实测在未签收时阻断、签收后放行。
-- 仓库已推送至 `github.com/Timevelyer/skill-arbiter`（private），远端 CI 三作业全绿。
+- 仓库已推送至 `github.com/Timevelyer/skill-arbiter`（public，GitHub 已将许可证识别为 MIT），远端 CI 三作业全绿。
 - 三个接管探针已真实执行并逐字记录，五维 Rubric 首评 4/4/4/4/4，已按所有者指示签收（`reviewer: Timevelyer`）。
 - 按要求，本机**未**将本技能安装到 OpenCode、Codex、ZCode；这三项宿主验证留待目标环境完成。
 - **37 个语义用例未执行**（所有者选择跳过），`tests/case-results.md` 全部 `not-run`，不得引用为通过。
@@ -16,6 +16,7 @@
 - [x] 21 个核心文件齐全，边界与进度为 1/21–21/21；CI 支撑文件单独列示。
 - [x] `README.md` 首段定位准确，第二段包含 SkillClash 与“成对兼容不代表组合兼容”。
 - [x] `LICENSE` 为完整 MIT，版权行为 `Copyright (c) 2026 skill-arbiter contributors`。
+- [x] GitHub 许可证识别为 MIT（`LICENSE` 仅含 MIT 正文，无附加元数据块）。
 - [x] README 的 MIT 声明指向 `LICENSE`，本文件保留同一引用：[MIT License](LICENSE)。
 - [x] 所有内部链接、模板引用、安装路径和版本号经过静态检查。
 
