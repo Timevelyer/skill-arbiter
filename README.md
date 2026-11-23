@@ -154,6 +154,7 @@ arbiter-summary:
 ## 测试与 CI
 
 - [tests/cases.md](tests/cases.md) 定义 37 个验收场景；[evaluation-rubric.md](tests/evaluation-rubric.md) 定义五维人工评分。
+- [OPERATIONS.md](OPERATIONS.md) 是使用与发布的单页操作手册：安装、触发、输入格式、四道门禁的具体改法与故障排查。
 - [validate.yml](.github/workflows/validate.yml) 校验所有 `SKILL.md` frontmatter、评分记录结构与 golden 文本回归；发布 `v*` tag 时额外强制人工评分门禁。
 - `tests/rubric-score.yml` 是 CI 支撑文件，不计入规范要求的 21 个核心文件。日常 CI 只校验其结构，发布门禁要求真实审核人完成评分与探针记录。
 - `tests/fixtures/` 与 `tests/golden/` 中的样例仅验证确定性文本回归，不证明语义分析正确，也不执行模型。
