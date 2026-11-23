@@ -93,7 +93,7 @@ JSON 边列表是测试断言的数据源，Mermaid 仅用于可视化。节点 
 | 三个技能构成高置信 S1 contradictory 极大团 | 双方共享规则去重，独有规则全部保留 |
 | 每条边附双方原文、规则 ID 与申诉条件 | worked example 通过覆盖、负向、最小性三检查 |
 | 停止自动合并，仍输出独立组分析 | 输出 provenance，未静默丢弃规则 |
-| 给出零文本改动隔离方案与最小修复路径 | 接管探针保持 `not-run`，不得宣称零接管 |
+| 给出零文本改动隔离方案与最小修复路径 | 探针结果绑定模型与宿主，未跨模型复现时不得宣称零接管 |
 
 ```yaml
 # 左侧摘要的合成示例
@@ -165,7 +165,9 @@ arbiter-summary:
 |---|---|---|
 | 21 个核心文件、边界标记、37 个用例编号 | 通过（静态） | 本地等价检查 |
 | `frontmatter` / `rubric-structure` / `golden` 作业 | 通过 | 本地等价执行 |
-| `rubric-gate` 发布门禁 | **待人工** | 评分 `pending`、探针 `not-run`，发布 tag 会被阻断 |
+| `case table conformance` 用例表一致性 | 通过 | 37 条规格与 37 行结果对齐，状态在约定词表内 |
+| `rubric-gate` 发布门禁 | **待人工签收** | 探针已真实执行、五维已首评（`agent-reviewed`，均值 4.00），但 `approved` 要求 `reviewed_by_role: human`，故发布 tag 仍被阻断 |
+| 37 个语义用例的实际结果 | **未执行** | 需在真实宿主逐条运行；`tests/case-results.md` 全为 `not-run` |
 | 6 个宿主安装与显式调用 | **未验证** | 按要求未在本机安装 OpenCode、Codex、ZCode；其余宿主亦未验证 |
 
 CI 只做结构校验；只有 `v*` tag 才强制人工门禁。未完成项见 [LAUNCH.md](LAUNCH.md)。
@@ -204,7 +206,7 @@ arbiter-summary:
   degraded_level: "none"
   actionability: "none"
   confidence: {certain: 0, high: 0, medium: 0, low: 0}
-  open_questions: ["真实模型探针与人工 Rubric 尚待执行"]
+  open_questions: ["五维评分为自动代理首评，待人工签收", "37 个语义用例尚未在真实宿主执行"]
   appeal_path: "无项目输入的强不一致判定；新证据应触发重新运行"
 ```
 

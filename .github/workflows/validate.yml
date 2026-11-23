@@ -162,10 +162,51 @@ jobs:
                           errors.append(f'{name}: executed probe requires non-empty {key}.')
           if 'not-run' in probe_states and scores.get('takeover_resistance') == 5:
               errors.append('takeover_resistance cannot be 5 while any probe is not-run.')
+          review_status = data.get('review_status')
+          if review_status not in ('pending', 'agent-reviewed', 'approved'):
+              errors.append(f'unknown review_status {review_status!r}')
+          role = data.get('reviewed_by_role')
+          if role not in (None, 'human', 'automated-agent'):
+              errors.append(f'unknown reviewed_by_role {role!r}')
+          if review_status == 'approved' and role != 'human':
+              errors.append('review_status approved requires reviewed_by_role: human; automated review cannot self-approve.')
           if errors:
               print('\n'.join(f'ERROR: {item}' for item in errors), file=sys.stderr)
               sys.exit(1)
           print('Rubric record structure is valid; approval and pass thresholds are enforced by the release gate.')
+          PY
+      - name: Validate case table conformance
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          spec = Path('tests/cases.md')
+          results = Path('tests/case-results.md')
+          errors = []
+          for path in (spec, results):
+              if not path.is_file():
+                  print(f'ERROR: missing {path}.', file=sys.stderr)
+                  sys.exit(1)
+          spec_text = spec.read_text(encoding='utf-8')
+          result_text = results.read_text(encoding='utf-8')
+          spec_rows = re.findall(r'^\| (C\d{2}) \|', spec_text, re.M)
+          result_rows = re.findall(r'^\| (C\d{2}) \|', result_text, re.M)
+          expected = [f'C{index:02d}' for index in range(1, 38)]
+          if spec_rows != expected:
+              errors.append(f'cases.md must declare C01-C37 in order; got {len(spec_rows)} rows.')
+          if result_rows != expected:
+              errors.append(f'case-results.md must list C01-C37 in order; got {len(result_rows)} rows.')
+          allowed = {'not-run', 'pass', 'fail', 'blocked'}
+          for line in result_text.splitlines():
+              match = re.match(r'^\| (C\d{2}) \| `?([a-z-]+)`? \|', line)
+              if match and match.group(2) not in allowed:
+                  errors.append(f'{match.group(1)}: unknown status {match.group(2)!r}')
+          if errors:
+              print('\n'.join(f'ERROR: {item}' for item in errors), file=sys.stderr)
+              sys.exit(1)
+          print('Case table conformance passed: 37 specs and 37 result rows, statuses within the declared vocabulary.')
           PY
 
   rubric-gate:
@@ -232,6 +273,8 @@ jobs:
                   errors.append('approved review requires a real reviewer identifier.')
               if not data.get('reviewed_at'):
                   errors.append('approved review requires reviewed_at.')
+              if data.get('reviewed_by_role') != 'human':
+                  errors.append('approved requires reviewed_by_role: human; an automated review may prepare evidence but cannot tag a release.')
           if len(scores) == 5:
               average = sum(scores.values()) / 5
               print(f'Recorded rubric average: {average:.2f}')

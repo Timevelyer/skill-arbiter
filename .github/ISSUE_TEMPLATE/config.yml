@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 安全问题（请勿公开）
+    url: https://github.com/Timevelyer/skill-arbiter/security/advisories/new
+    about: 提示注入、安全规则丢失或越权指令扩散等问题，请用 private vulnerability report 提交。

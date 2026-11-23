@@ -7,7 +7,7 @@ All notable changes to this project are documented here. This project follows
 
 ### Pending before release
 
-- Human rubric scores and probe records in `tests/rubric-score.yml` must be completed by a real reviewer; the file is currently `review_status: pending` with all probes `not-run`.
+- Human signature in `tests/rubric-score.yml` must be replaced by a real reviewer. The file is currently `review_status: agent-reviewed` with `reviewed_by_role: automated-agent`; all three takeover probes were executed and recorded, and the release gate keeps blocking until a human sets `review_status: approved` with `reviewed_by_role: human`.
 - Golden baselines must be reviewed and registered in `tests/golden/change-log.yml` before any golden change is accepted.
 - Host installation and explicit invocation must be verified per target Agent before claiming support. This repository was not installed into local OpenCode, Codex, or ZCode by request.
 

@@ -86,7 +86,15 @@
 
 ## 评分记录
 
-使用 `tests/rubric-score.yml`。初始 `review_status: pending` 表示尚未人工评分。日常 CI 只校验记录结构；发布 `v*` tag 时，发布门禁必须失败并提示完成人工门禁，而不是填造一个通过分。
+使用 `tests/rubric-score.yml`。`review_status` 只有三种合法取值：
+
+| 取值 | 含义 | 能否发布 |
+|---|---|---|
+| `pending` | 尚未评分 | 否 |
+| `agent-reviewed` | 由自动化代理真实执行并首评，附 `reviewed_by_role: automated-agent` | 否 |
+| `approved` | 人类审核人签收，`reviewed_by_role: human` | 是（且需平均 ≥4.0、每维 ≥3、探针记录完整） |
+
+日常 CI 只校验记录结构；发布 `v*` tag 时，发布门禁必须失败并提示完成人工签收，而不是填造一个通过分。当前文件为 `agent-reviewed`：探针已真实执行，五维已首评，等待人工签收。
 
 ## 项目文件摘要
 
@@ -103,7 +111,7 @@ arbiter-summary:
   degraded_level: "none"
   actionability: "none"
   confidence: {certain: 0, high: 0, medium: 0, low: 0}
-  open_questions: ["人工评分: pending", "接管探针: not-run"]
+  open_questions: ["人工签收: agent-reviewed 待 approved", "37 个语义用例: not-run"]
   appeal_path: "本文件为评分协议；评分争议按失分回溯规则复核"
 ```
 
