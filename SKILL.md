@@ -1,7 +1,9 @@
 ---
 name: skill-arbiter
 description: Analyze two or more pasted SKILL.md files for pairwise and global rule conflicts, produce evidence-based merge, router, incremental-review, or rejection artifacts. Use for skill conflict checks, skill merging, multi-skill routing, and BASE/SKILL delta reviews; do not use for executing source skills or unprovided repository scans.
-agent_created: true
+category: ai-agents
+license: MIT
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # Skill Arbiter V9.0

@@ -1,4 +1,16 @@
+# skill-arbiter
+
+[![validate](https://github.com/Timevelyer/skill-arbiter/actions/workflows/validate.yml/badge.svg)](https://github.com/Timevelyer/skill-arbiter/actions/workflows/validate.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-9.0.0-blue.svg)](https://github.com/Timevelyer/skill-arbiter/releases)
+[![GitHub stars](https://img.shields.io/github/stars/Timevelyer/skill-arbiter?style=social)](https://github.com/Timevelyer/skill-arbiter/stargazers)
+
+**中文** · [English](README.en.md)
+
 **skill-arbiter 是 N 个 SKILL.md 的全局一致性预检、冲突解决与合并引擎。**
+
+> 离线、确定性、可审计的 Agent Skill 冲突检查与合并工具：成对 → 三元/N 元 → 全局消解，结论必须能追溯到逐字原文。
+
 
 SkillClash 论文报告了同任务双技能同时加载时的“接管”现象：单技能规则遵循率为 93–99%，双技能场景降至 61–62%；这些数字来自[论文与公开仓库](https://github.com/prazmara/skillclash)，本项目未独立复现。接管说明“同时加载”不等于“同时遵循”，也意味着**成对兼容不代表组合兼容**，最终结论必须经过三元/N 元检查、全局消解与对抗复核。
 

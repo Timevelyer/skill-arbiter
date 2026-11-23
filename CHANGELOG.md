@@ -11,6 +11,12 @@ All notable changes to this project are documented here. This project follows
 - The 37 semantic cases were **not** executed. `tests/case-results.md` remains `not-run` and `case_runs.skipped_by_owner` is `true`; do not cite them as passing.
 - Host installation and explicit invocation must be verified per target Agent before claiming support. This repository was not installed into local OpenCode, Codex, or ZCode by request.
 
+### Changed
+
+- `SKILL.md` frontmatter now uses only portable, schema-checked fields (`name`, `description`, `category`, `license`, `allowed-tools`); the non-standard `agent_created` field was removed so the skill can be bundled into third-party collections without frontmatter errors.
+- `LICENSE` now contains the MIT text only, so GitHub detects the license; the appended metadata block was removed.
+- Added `README.en.md` and status badges; the Chinese README links to the English edition.
+
 ## [9.0.0] - 2026-11-23
 
 ### Added

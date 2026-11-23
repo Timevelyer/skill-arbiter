@@ -19,25 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-Project metadata below is not part of the license terms.
-
-```yaml
-arbiter-summary:
-  version: "9.0.0"
-  mode: "full"
-  skills_in: 0
-  groups_out: 0
-  verdict: "human-review"
-  rules: {total: 0, kept: 0, deduped: 0, conditional: 0, deferred: 0, excluded: 0}
-  conflicts: {exclusive: 0, shared: 0, entangled: 0, contradictory: 0, dependency: 0, intent: 0}
-  severity: {S0: 0, S1: 0, S2: 0, S3: 0}
-  degraded_level: "none"
-  actionability: "none"
-  confidence: {certain: 0, high: 0, medium: 0, low: 0}
-  open_questions: []
-  appeal_path: "License text contains no conflict adjudication"
-```
-
-<!-- FILE END: LICENSE -->
-<!-- PROGRESS: 20/21 -->
