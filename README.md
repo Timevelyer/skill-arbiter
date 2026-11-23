@@ -167,8 +167,8 @@ arbiter-summary:
 | 21 个核心文件、边界标记、37 个用例编号 | 通过（静态） | 本地等价检查 |
 | `frontmatter` / `rubric-structure` / `golden` 作业 | 通过 | 本地等价执行 |
 | `case table conformance` 用例表一致性 | 通过 | 37 条规格与 37 行结果对齐，状态在约定词表内 |
-| `rubric-gate` 发布门禁 | **待人工签收** | 探针已真实执行、五维已首评（`agent-reviewed`，均值 4.00），但 `approved` 要求 `reviewed_by_role: human`，故发布 tag 仍被阻断 |
-| 37 个语义用例的实际结果 | **未执行** | 需在真实宿主逐条运行；`tests/case-results.md` 全为 `not-run` |
+| `rubric-gate` 发布门禁 | 通过 | 探针已真实执行、五维均值 4.00 并已签收（`approved` / `reviewer: Timevelyer`）；签到性质见 `signoff_basis` |
+| 37 个语义用例的实际结果 | **未执行** | 所有者选择跳过；`tests/case-results.md` 全为 `not-run`，不得引用为通过 |
 | 6 个宿主安装与显式调用 | **未验证** | 按要求未在本机安装 OpenCode、Codex、ZCode；其余宿主亦未验证 |
 
 CI 只做结构校验；只有 `v*` tag 才强制人工门禁。未完成项见 [LAUNCH.md](LAUNCH.md)。

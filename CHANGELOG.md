@@ -7,8 +7,8 @@ All notable changes to this project are documented here. This project follows
 
 ### Pending before release
 
-- Human signature in `tests/rubric-score.yml` must be replaced by a real reviewer. The file is currently `review_status: agent-reviewed` with `reviewed_by_role: automated-agent`; all three takeover probes were executed and recorded, and the release gate keeps blocking until a human sets `review_status: approved` with `reviewed_by_role: human`.
-- Golden baselines must be reviewed and registered in `tests/golden/change-log.yml` before any golden change is accepted.
+- `tests/rubric-score.yml` is signed off (`review_status: approved`, `reviewer: Timevelyer`, `reviewed_by_role: human`). The `signoff_basis` field records that the sign-off follows the owner's instruction and rests on the automated first-pass review; the owner did not re-read each dimension independently.
+- The 37 semantic cases were **not** executed. `tests/case-results.md` remains `not-run` and `case_runs.skipped_by_owner` is `true`; do not cite them as passing.
 - Host installation and explicit invocation must be verified per target Agent before claiming support. This repository was not installed into local OpenCode, Codex, or ZCode by request.
 
 ## [9.0.0] - 2026-11-23

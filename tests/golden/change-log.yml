@@ -1,6 +1,6 @@
 - file: "basic-merge.md"
   change: "Initial deterministic structural fixture; no semantic correctness or model behavior is claimed."
   source_case: "structural-fixture"
-  reviewer: "automated-bootstrap"
+  reviewer: "Timevelyer"
   reviewed_at: "2026-11-23"
-  evidence: "Synthetic fixture authored from the V9.0 output schema; human semantic review remains pending."
+  evidence: "diff -u tests/golden/basic-merge.md tests/fixtures/basic-merge.md produces no output; CI job C re-verifies on every push. Sign-off recorded on the owner's instruction; no independent semantic audit of the fixture text was performed."

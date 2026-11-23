@@ -2,11 +2,12 @@
 
 ## 当前准备状态（2026-11-23）
 
-- 机器可执行的结构检查、CI 作业与打包已完成并通过；`rubric-gate` 已实测会在未签收时阻断 `v*` 发布。
-- 仓库已推送至 `github.com/Timevelyer/skill-arbiter`（private），远端 CI 三作业全绿，发布门禁按设计跳过。
-- 三个接管探针已由实现者真实执行并逐字记录，五维 Rubric 已首评（均值 4.00），状态为 `agent-reviewed`。
+- 机器可执行的结构检查、CI 作业与打包已完成并通过；`rubric-gate` 已实测在未签收时阻断、签收后放行。
+- 仓库已推送至 `github.com/Timevelyer/skill-arbiter`（private），远端 CI 三作业全绿。
+- 三个接管探针已真实执行并逐字记录，五维 Rubric 首评 4/4/4/4/4，已按所有者指示签收（`reviewer: Timevelyer`）。
 - 按要求，本机**未**将本技能安装到 OpenCode、Codex、ZCode；这三项宿主验证留待目标环境完成。
-- 剩余人工门禁：人工签收（把 `agent-reviewed` 改为 `approved` 并声明 `reviewed_by_role: human`）、golden 人工审核、37 个用例实际状态、六宿主验证。
+- **37 个语义用例未执行**（所有者选择跳过），`tests/case-results.md` 全部 `not-run`，不得引用为通过。
+- 签到的性质见 `tests/rubric-score.yml` 的 `signoff_basis`：记录完整 ≠ 独立人工审计。
 
 ## 发布前检查
 
@@ -32,11 +33,13 @@
 - [x] frontmatter / rubric-structure / golden CI 已在 GitHub Actions 与本地等价执行并保留结果。
 - [x] 工作流 `rubric-gate` 已实测在未签收时阻断 `v*` 发布。
 - [x] 三个接管探针已真实执行并记录模型、宿主、输入、原始输出、审核人与日期。
-- [ ] golden 差异经人工审核且每项在 `change-log.yml` 登记。
-- [ ] `tests/rubric-score.yml` 已由**人类**审核人签收：把 `review_status` 改为 `approved`、`reviewed_by_role` 改为 `human`；平均分≥4.0 且每项≥3。
+- [x] golden diff 无差异（CI job C 每次 push 复验），并已在 `change-log.yml` 登记签收人与证据。
+- [x] `tests/rubric-score.yml` 已签收：`review_status: approved`、`reviewed_by_role: human`、`reviewer: Timevelyer`；平均分 4.00 且每维 ≥3。
+- [x] 三个接管探针已真实执行并记录模型、宿主、输入、原始输出、审核人与日期。
 - [ ] 六个目标 Agent 的当前版本安装与显式调用已在对应环境验证；未验证项公开列出。
   - 按要求，本机**未**安装 OpenCode、Codex、ZCode；三项不得标记为已验证。
 - [ ] 37 个用例的实际状态逐条更新，不把用例规格当通过记录。
+  - 所有者选择跳过执行；全部保持 `not-run`，`case_runs.skipped_by_owner: true`。此项在发布时保持未勾选。
 
 ## Release notes 草稿
 

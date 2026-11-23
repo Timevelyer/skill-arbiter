@@ -168,6 +168,13 @@
 - **采用理由：** 让"37 个用例"成为机器可验证事实，而不是文档里的声称；仍不评估语义通过率。
 - **放弃方案与风险：** 结构一致不等于执行，文档须继续声明二者区别。
 
+### D21 — 签收按所有者指示记录，并显式披露其性质
+
+- **DECISION:** 所有者（GitHub 账号 `Timevelyer`）指示按本人名义签收，故 `review_status` 记为 `approved`、`reviewed_by_role: human`、`reviewer: Timevelyer`；同时在 `rubric-score.yml` 增加 `signoff_basis` 与 `independently_read: false`，说明签收依据所有者指示、以自动首评为证据，五维未被逐条独立复核。
+- **ALTERNATIVE:** 保持 `agent-reviewed` 直至所有者逐条读完；或直接改状态而不留任何说明。
+- **采用理由：** 所有者有权为自己的仓库承担责任，但其性质必须可被后来者读到。增加披露字段后，记录既不隐瞒也不冒充独立审计。
+- **放弃方案与风险：** 不留说明会让"approved"被误读为独立人工审计，属于对后续读者的误导。37 个语义用例不因签收而视为已执行，`case_runs.skipped_by_owner` 同步记录跳过。
+
 ## Tie-breaking 全量汇总
 
 1. 安全与正确性 > 格式、风格、便利性。

@@ -8,13 +8,15 @@
 
 ## 0. 一分钟决策
 
-| 你的目标 | 走哪一节 | 需要多久 | 需要谁签字 |
-|---|---|---|---|
-| 想立刻用它裁决两份技能 | [第 1 节](#1-快速使用) | 约 5 分钟 | 不需要 |
-| 想打 `v9.0.0` 标签对外发布 | [第 2 节](#2-发布流程四道门禁) | 1–2 小时 | 需要你本人 |
-| 跑起来不对，想定位问题 | [第 3 节](#3-故障排查) | — | — |
+| 你的目标 | 走哪一节 | 状态 |
+|---|---|---|
+| 想立刻用它裁决两份技能 | [第 1 节](#1-快速使用) | 可用，约 5 分钟 |
+| 打 `v9.0.0` 标签发布 | [第 2 节](#2-发布流程四道门禁) | 2.1 / 2.2 已签收，2.3 已跳过，2.4 待验证 |
+| 跑起来不对，想定位问题 | [第 3 节](#3-故障排查) | — |
 
-**建议顺序**：先走第 1 节验证它真的有用，再决定第 2 节。技能跑不通时发布没有意义。
+**当前状态**：仓库 38 个文件已推送，CI 三作业全绿；发布门禁 `rubric-gate` 在签收后可通过。
+
+**已知缺口（写在这里，避免被忽略）**：37 个语义用例**未执行**；六个宿主的安装与调用**未验证**。这两项不阻塞发布，但也不能说成"已验证"。
 
 ---
 
@@ -102,17 +104,21 @@ test -f ~/.workbuddy/skills/skill-arbiter/SKILL.md && echo "OK: 技能文件已�
 
 发布门禁只在你推 `v*` 标签时运行。日常 push 只跑结构校验，所以现在仓库是绿的；一旦打标签，门禁会拦住未签收的状态。
 
-### 2.1 签收评分（改 3 行）
+### 2.1 签收评分（已完成）
 
 文件：[tests/rubric-score.yml](tests/rubric-score.yml)
 
-| 行号 | 字段 | 现在 | 改成 |
-|---:|---|---|---|
-| 2 | `review_status` | `"agent-reviewed"` | `"approved"` |
-| 3 | `reviewer` | `"WorkBuddy agent (DeepSeek-V4.1-Flash) — ..."` | 你的名字或 GitHub handle |
-| 5 | `reviewed_by_role` | `"automated-agent"` | `"human"` |
+| 字段 | 当前值 |
+|---|---|
+| `review_status` | `"approved"` |
+| `reviewer` | `"Timevelyer"` |
+| `reviewed_by_role` | `"human"` |
+| `signoff_basis` | 说明本次签收依据所有者指示、以自动首评为证据基础 |
+| `independently_read` | `false` |
 
-改之前请读一遍五个维度的 `evidence`，确认你认可这个分数：
+**记录完整 ≠ 独立人工审计。** 若你之后逐条读完五维并对某些分数有异议，应改分并新增一条审核记录（保留旧分与差异原因），而不是覆盖。
+
+当前分数：
 
 | 维度 | 当前分 | 依据在哪 |
 |---|---:|---|
@@ -124,21 +130,24 @@ test -f ~/.workbuddy/skills/skill-arbiter/SKILL.md && echo "OK: 技能文件已�
 
 均值 **4.00**，恰好压在 ≥4.0 的线上。**任何一维降到 3 都会让均值掉到 3.8，门禁不再放行**——这是刻意的，别为了让 CI 变绿而调分。
 
-### 2.2 golden 复核（改 1 行）
+### 2.2 golden 复核（已完成）
 
 ```bash
 cd H:/Workbuddy_Workshop/skill-arbiter
 diff -u tests/golden/basic-merge.md tests/fixtures/basic-merge.md
 ```
 
-- **无输出**（当前状态）：把 [tests/golden/change-log.yml](tests/golden/change-log.yml) 的 `reviewer: "automated-bootstrap"` 改成你的名字，`evidence` 指向这次 diff。
-- **有差异**：先判断是规则变更还是产物错误。不得无解释覆盖基线。
+无输出（当前状态），[tests/golden/change-log.yml](tests/golden/change-log.yml) 已登记 `reviewer: Timevelyer`。若将来出现差异：先判断是规则变更还是产物错误，**不得无解释覆盖基线**。
 
-### 2.3 37 个用例（从 `not-run` 改成 `pass`）
+### 2.3 37 个用例（已跳过）
 
 文件：[tests/case-results.md](tests/case-results.md)｜规格：[tests/cases.md](tests/cases.md)
 
-这一步没有捷径，必须在真实宿主里逐条跑。建议先挑最独立的四条，确认流程走得通：
+**当前状态：全部 `not-run`，所有者选择跳过。** `rubric-score.yml` 里 `case_runs.skipped_by_owner: true` 已记录该决定。
+
+这意味着：本仓库**没有** 37 个用例的通过率，任何"测试全通过"的说法都是不成立的。门禁 D 不检查这一节，所以发布不受影响。
+
+若日后要补，按下面顺序起步（先验证流程，再铺开）：
 
 | 建议顺序 | 用例 | 测什么 | 为什么先跑 |
 |---:|---|---|---|
@@ -148,13 +157,13 @@ diff -u tests/golden/basic-merge.md tests/fixtures/basic-merge.md
 | 4 | C29 | 两个同名技能正文不同 | 输入错误路径 |
 | 5 | C01 | 首行标题 vs 首行状态 | 最典型的 S1 硬矛盾 |
 
-每跑完一条，在 [tests/case-results.md](tests/case-results.md) 填一行：
+每跑完一条填一行：
 
 ```markdown
-| C36 | `pass` | 你的名字 | 2026-11-23 | 产物第 6 节图/边一致性；规则 ID R12 |
+| C36 | `pass` | Timevelyer | 2026-11-23 | 产物第 6 节图/边一致性；规则 ID R12 |
 ```
 
-**不得批量填 `pass`**，也不得用规格里的"预期"代替实际产物。CI 只核对 37 行是否齐全、状态是否在词表内，语义真伪由你负责。
+**不得批量填 `pass`**，也不得用规格里的"预期"代替实际产物。
 
 ### 2.4 六宿主验证
 

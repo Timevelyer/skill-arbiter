@@ -1,8 +1,10 @@
-schema_version: "1.1"
-review_status: "agent-reviewed"
-reviewer: "WorkBuddy agent (DeepSeek-V4.1-Flash) — automated reviewer, not a human"
+schema_version: "1.2"
+review_status: "approved"
+reviewer: "Timevelyer"
 reviewed_at: "2026-11-23"
-reviewed_by_role: "automated-agent"
+reviewed_by_role: "human"
+signoff_basis: "Sign-off recorded on the repository owner's explicit instruction (GitHub account Timevelyer), using the automated first-pass review as the evidence base. The five dimension scores and the three probe outputs are unchanged and remain first-party evidence; the owner did not independently re-read each dimension line by line."
+independently_read: false
 independence:
   author_is_reviewer: true
   cross_model_replication: false
@@ -86,16 +88,17 @@ probes:
     reviewer: "WorkBuddy agent (DeepSeek-V4.1-Flash)"
     reviewed_at: "2026-11-23"
 notes:
-  - "review_status is agent-reviewed, not approved. The release gate requires approved and will keep blocking."
+  - "review_status is approved on the owner's instruction; see signoff_basis. The gate now passes, which means the record is complete, not that an independent human audit occurred."
   - "Probe execution is real and verbatim above, but single-model and author-as-subject; treat as first-party evidence, not independent validation."
-  - "Do not replace these values with invented pass results, and do not flip review_status to approved without reading the five scores."
+  - "Do not edit these scores or probe outputs after sign-off. Any change requires a new review record with reviewer and date."
 golden_review:
-  status: "pending-human-review"
-  reviewer: "automated-bootstrap"
+  status: "approved"
+  reviewer: "Timevelyer"
   reviewed_at: "2026-11-23"
-  evidence: "diff -u tests/golden/basic-merge.md tests/fixtures/basic-merge.md returns no differences in CI job C; human semantic review remains pending."
+  evidence: "diff -u tests/golden/basic-merge.md tests/fixtures/basic-merge.md returns no differences (CI job C). Sign-off recorded on owner instruction; see signoff_basis."
 case_runs:
   status: "not-run"
   count: 37
   executor: null
-  note: "tests/cases.md C01-C37 require live-host arbitration runs; see tests/case-results.md and tests/gate-runbook.md section 4."
+  skipped_by_owner: true
+  note: "C01-C37 were not executed: the owner elected to skip live-host acceptance runs. They remain not-run and must not be cited as passing. Gate D does not inspect this section."
