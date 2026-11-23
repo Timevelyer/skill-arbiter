@@ -53,11 +53,39 @@ Output must include a migration note.
 
 ```mermaid
 graph TD
-  Input --> Parse --> Pair --> Breaker --> Resolve
-  Pair --> Global --> Resolve
-  Resolve --> Merge --> Review --> Output
-  Breaker --> Reject --> Output
+  Input["Input"] --> Parse["Parse"]
+  Parse --> Pair["Pair"]
+  Pair --> Breaker["Breaker"]
+  Pair --> Global["Global"]
+  Breaker --> Resolve["Resolve"]
+  Global --> Resolve
+  Resolve --> Merge["Merge"]
+  Merge --> Review["Review"]
+  Review --> Output["Output"]
+  Breaker --> Reject["Reject"]
+  Reject --> Output
 ```
+
+```json
+{
+  "nodes": ["Input", "Parse", "Pair", "Breaker", "Global", "Resolve", "Merge", "Review", "Output", "Reject"],
+  "edges": [
+    {"from": "Input", "to": "Parse", "relation": "flow", "directed": true},
+    {"from": "Parse", "to": "Pair", "relation": "flow", "directed": true},
+    {"from": "Pair", "to": "Breaker", "relation": "flow", "directed": true},
+    {"from": "Pair", "to": "Global", "relation": "flow", "directed": true},
+    {"from": "Breaker", "to": "Resolve", "relation": "flow", "directed": true},
+    {"from": "Global", "to": "Resolve", "relation": "flow", "directed": true},
+    {"from": "Resolve", "to": "Merge", "relation": "flow", "directed": true},
+    {"from": "Merge", "to": "Review", "relation": "flow", "directed": true},
+    {"from": "Review", "to": "Output", "relation": "flow", "directed": true},
+    {"from": "Breaker", "to": "Reject", "relation": "flow", "directed": true},
+    {"from": "Reject", "to": "Output", "relation": "flow", "directed": true}
+  ]
+}
+```
+
+The Mermaid diagram is for reading; the JSON edge list is the machine-checked assertion. Node IDs and edge directions must match one-to-one.
 
 Parse and atomize → pair analysis → circuit breaker → tri/n-ary checks → global resolution → merge with a worked example → adversarial review → output assembly.
 
@@ -81,7 +109,7 @@ This section is deliberately explicit; the same table is in the Chinese README.
 
 | Item | Status | Note |
 |---|---|---|
-| 21 core files, boundary markers, C01–C37 numbering | pass (static) | local equivalent check |
+| 21 core files, C01–C37 numbering | pass (static) | boundary and progress markers present in 20 files; `LICENSE` is MIT text only by design (D22) so GitHub detects the license |
 | `frontmatter` / `rubric-structure` / `golden` jobs | pass | local equivalent execution |
 | Case-table conformance | pass | 37 spec rows align with 37 result rows |
 | Release gate | pass on `v9.0.0` | probes actually run; five-dimension mean 4.00; sign-off recorded with its basis stated in `signoff_basis` |

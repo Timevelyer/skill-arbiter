@@ -20,8 +20,9 @@ mkdir -p .claude/skills && cp -R ./skill-arbiter .claude/skills/skill-arbiter
 ## Frontmatter 注意事项
 
 - 文件首行必须是 `---`，并保留 `name`、`description`。
-- 本项目保留 WorkBuddy 使用的 `agent_created: true`；Claude Code 会把它作为非核心扩展处理，不依赖该字段触发。
-- 不添加 Claude Code 专有的 `allowed-tools`、`hooks` 或动态上下文语法，以维持跨 Agent 一致性。
+- 本项目 frontmatter 只使用 `name`、`description`、`category`、`license`、`allowed-tools`；`agent_created` 已移除（D23），Claude Code 不依赖它触发。
+- `allowed-tools: Read, Write, Edit, Bash, Glob, Grep` 是工具范围声明；若你的 Claude Code 版本要求 YAML 列表形式，请改为列表后再安装。
+- 不添加 `hooks` 或动态上下文语法，以维持跨 Agent 一致性。
 
 ## 验证命令
 

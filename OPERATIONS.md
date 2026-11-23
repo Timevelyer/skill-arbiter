@@ -2,7 +2,7 @@
 
 > 面向使用者和维护者的单页手册。目标：**先能在 5 分钟内用起来**，再决定要不要走发布流程。
 >
-> 当前版本 9.0.0 ｜ 最近更新 2026-11-23 ｜ 仓库 `Timevelyer/skill-arbiter`（private）
+> 当前版本 9.0.0 ｜ 最近更新 2026-11-23 ｜ 仓库 `Timevelyer/skill-arbiter`（public，许可证识别为 MIT）
 
 ---
 
@@ -11,10 +11,10 @@
 | 你的目标 | 走哪一节 | 状态 |
 |---|---|---|
 | 想立刻用它裁决两份技能 | [第 1 节](#1-快速使用) | 可用，约 5 分钟 |
-| 打 `v9.0.0` 标签发布 | [第 2 节](#2-发布流程四道门禁) | 2.1 / 2.2 已签收，2.3 已跳过，2.4 待验证 |
+| 打 `v9.0.0` 标签发布 | [第 2 节](#2-发布流程四道门禁) | **已完成**：2.1 / 2.2 已签收，2.3 已跳过，2.4 未验证 |
 | 跑起来不对，想定位问题 | [第 3 节](#3-故障排查) | — |
 
-**当前状态**：仓库 38 个文件已推送，CI 三作业全绿；发布门禁 `rubric-gate` 在签收后可通过。
+**当前状态**：仓库 39 个文件已推送，CI 四作业全绿，`v9.0.0` 标签与 GitHub Release 已创建，发布门禁在签收后实测通过。
 
 **已知缺口（写在这里，避免被忽略）**：37 个语义用例**未执行**；六个宿主的安装与调用**未验证**。这两项不阻塞发布，但也不能说成"已验证"。
 
@@ -171,19 +171,21 @@ diff -u tests/golden/basic-merge.md tests/fixtures/basic-merge.md
 
 未验证的**保持空白**，不要为了让清单好看而勾选。目前 OpenCode / Codex / ZCode 按既定约束未在本机安装。
 
-### 2.5 打标签与发布
+### 2.5 打标签与发布（已执行）
 
-上面 2.1–2.3 完成后：
+`v9.0.0` 已于 2026-11-23 创建并推送，发布门禁通过，Release 已生成。若后续内容有变，重复以下流程：
 
 ```bash
 cd H:/Workbuddy_Workshop/skill-arbiter
-git add -A && git commit -m "chore: record human sign-off for 9.0.0"
+git add -A && git commit -m "chore: <变更说明>"
 git push
-git tag v9.0.0 && git push origin v9.0.0
-gh release create v9.0.0 --title "skill-arbiter 9.0.0" --notes-file LAUNCH.md
+git tag v9.0.1 && git push origin v9.0.1
+gh release create v9.0.1 --title "skill-arbiter 9.0.1" --notes-file LAUNCH.md
 ```
 
 推送 tag 会触发 `rubric-gate`。**通过**才创建 Release；**失败**说明还有一项没签收，按报错补。
+
+> 注意：`v9.0.0` 指向签收提交 `9760b1f`，不含其后两个公开化文档提交（英文 README、LICENSE 精简）。下载 Release 源码包时看到的 `LICENSE` 仍带附加元数据块；以 `main` 为准。
 
 > 远端使用 SSH（`git@github.com:Timevelyer/skill-arbiter.git`）。`gh` 的 OAuth token 缺 `workflow` scope，走 HTTPS 推 workflow 文件会被拒；如需改回 HTTPS，先 `gh auth refresh -h github.com -s workflow`。
 

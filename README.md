@@ -176,7 +176,7 @@ arbiter-summary:
 
 | 检查 | 状态 | 说明 |
 |---|---|---|
-| 21 个核心文件、边界标记、37 个用例编号 | 通过（静态） | 本地等价检查 |
+| 21 个核心文件、37 个用例编号 | 通过（静态） | 21 个文件齐全；其中 20 个带 `FILE END` / `PROGRESS` 标记，`LICENSE` 按 D22 只保留 MIT 正文以便 GitHub 识别许可证 |
 | `frontmatter` / `rubric-structure` / `golden` 作业 | 通过 | 本地等价执行 |
 | `case table conformance` 用例表一致性 | 通过 | 37 条规格与 37 行结果对齐，状态在约定词表内 |
 | `rubric-gate` 发布门禁 | 通过 | 探针已真实执行、五维均值 4.00 并已签收（`approved` / `reviewer: Timevelyer`）；签到性质见 `signoff_basis` |

@@ -24,8 +24,9 @@ New-Item -ItemType Directory -Force "$HOME/.workbuddy/skills" | Out-Null; Copy-I
 
 ## Frontmatter 注意事项
 
-- 保留 `name`、`description` 和 `agent_created: true`；后者使本地创建的技能可被技能管理功能识别为维护对象。
-- 其他 Agent 不必理解 `agent_created`；跨 Agent 行为只能依赖公共字段与正文。
+- 当前 `SKILL.md` 使用 `name`、`description`、`category`、`license`、`allowed-tools`，**不含** `agent_created`（D23 已移除）。
+- 若你的 WorkBuddy 版本要求该字段才能把技能识别为本地维护对象，请在复制后的副本里手动补 `agent_created: true`；这属于本地覆盖，不要提交回仓库，以免破坏其他宿主的可移植性。
+- 跨 Agent 行为只能依赖公共字段与正文，不依赖任何宿主的私有扩展。
 - 不把 WorkBuddy 专用工具名写入核心规则，保证离线文本分析可移植。
 
 ## 验证命令

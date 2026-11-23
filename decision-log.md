@@ -41,6 +41,7 @@
 - **ALTERNATIVE:** 为六个 Agent 分别维护规则副本。
 - **采用理由：** 避免规则版本漂移；当前官方文档均支持目录型 `SKILL.md`。
 - **放弃方案与风险：** 专用副本可利用宿主扩展，但维护成本高；未知字段行为仍须在各宿主实测。
+- **后续变更：** `agent_created` 已于 9.0.0 公开化时移除，见 D23；本决策的"单一源"结论不变。
 
 ### D03 — 八层顺序与组合结论
 
@@ -175,6 +176,20 @@
 - **采用理由：** 所有者有权为自己的仓库承担责任，但其性质必须可被后来者读到。增加披露字段后，记录既不隐瞒也不冒充独立审计。
 - **放弃方案与风险：** 不留说明会让"approved"被误读为独立人工审计，属于对后续读者的误导。37 个语义用例不因签收而视为已执行，`case_runs.skipped_by_owner` 同步记录跳过。
 
+### D22 — `LICENSE` 豁免文件边界与摘要标记
+
+- **DECISION:** `LICENSE` 只保留 MIT 正文，不再包含 `<!-- FILE END: LICENSE -->`、`<!-- PROGRESS: 20/21 -->` 与 `arbiter-summary` 块，以便 GitHub 正确识别许可证。其余 20 个核心文件继续保留标记。
+- **ALTERNATIVE:** 保留附加块，接受 GitHub 许可证识别失败；或删除 `LICENSE` 改用仓库设置声明许可证。
+- **采用理由：** 许可证识别影响第三方合规扫描与 GitHub 侧展示；标记块是项目内部约定，不影响技能运行。
+- **放弃方案与风险：** 21 个文件不再是"全部带标记"，因此 README、README.en.md 与 LAUNCH 的相关表述已改为"21 个文件齐全、20 个带标记"，不再声称 1/21–21/21 全覆盖。历史标记仍可在 `9760b1f` 及更早提交中查到。
+
+### D23 — 移除 `agent_created`，frontmatter 只保留可移植字段
+
+- **DECISION:** `SKILL.md` 的 frontmatter 收敛为 `name`、`description`、`category`、`license`、`allowed-tools`，删除 `agent_created`。
+- **ALTERNATIVE:** 继续保留 `agent_created: true` 以适配 WorkBuddy 技能管理；或为每个宿主维护独立 frontmatter。
+- **采用理由：** 该字段非标准，第三方技能集在 schema 校验时可能报错；六个宿主的调用都只依赖 `name` 与 `description`。
+- **放弃方案与风险：** 若某版本 WorkBuddy 依赖该字段识别"本地维护对象"，需在本地副本手动补回；`install/workbuddy.md` 已写明这是本地覆盖、不应提交回仓库。六份安装说明同步删除了"保留 `agent_created`"的旧表述。
+
 ## Tie-breaking 全量汇总
 
 1. 安全与正确性 > 格式、风格、便利性。
@@ -205,7 +220,8 @@
 
 - **9.0.0（2026-11-23）**：建立 21 个核心交付文件、统一八层流程、37 个测试规格、六宿主安装说明、三类 CI、人工 Rubric 和 golden 变更门禁。
 - **9.0.0 发布准备补充（2026-11-23）**：按 D17 拆分 CI 为 `rubric-structure` 与 `rubric-gate`；新增 `.gitattributes`、`.gitignore`、`CHANGELOG.md`、`tests/rubric-worksheet.md`、`tests/case-results.md` 作为工程配套，不计入 21 个核心文件；未在本机安装 OpenCode、Codex、ZCode，未执行 commit/push。
-- **仓库发布（2026-11-23）**：按 D18 真实执行三探针并记录首方评分；按 D19 改用 SSH 推送至 `github.com/Timevelyer/skill-arbiter`（private）；按 D20 为用例表增加 CI 一致性校验；补齐 `CONTRIBUTING.md`、`SECURITY.md`、issue/PR 模板与 `.editorconfig`。发布 tag 与 GitHub Release 仍未创建，等待人工签收。
+- **仓库发布（2026-11-23）**：按 D18 真实执行三探针并记录首方评分；按 D19 改用 SSH 推送至 `github.com/Timevelyer/skill-arbiter`（现已公开）；按 D20 为用例表增加 CI 一致性校验；补齐 `CONTRIBUTING.md`、`SECURITY.md`、issue/PR 模板与 `.editorconfig`。
+- **公开化与 9.0.0 发布（2026-11-23）**：按 D22 精简 `LICENSE` 以便 GitHub 识别 MIT，按 D23 移除 `agent_created`；新增 `README.en.md`、状态徽章。`v9.0.0` 标签与 GitHub Release 已创建，`rubric-gate` 在该标签上实测通过。`v9.0.0` 指向签收提交 `9760b1f`，其后两个提交为文档与 frontmatter 变更。
 - 后续版本须在此追加变更、证据和迁移影响，不改写历史记录以掩盖差异。
 
 ## 项目文件摘要
@@ -223,7 +239,7 @@ arbiter-summary:
   degraded_level: "none"
   actionability: "none"
   confidence: {certain: 0, high: 0, medium: 0, low: 0}
-  open_questions: ["外部实验值未独立复现", "真实模型探针: not-run"]
+  open_questions: ["外部实验值未独立复现", "37 个语义用例: not-run"]
   appeal_path: "本日志无输入强判定；设计争议须附新证据与影响分析"
 ```
 

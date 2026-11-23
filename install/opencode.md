@@ -21,7 +21,7 @@ mkdir -p .opencode/skills && cp -R ./skill-arbiter .opencode/skills/skill-arbite
 ## Frontmatter 注意事项
 
 - OpenCode 要求 `name` 与目录名一致，并采用小写字母/数字/单连字符；`description` 为 1–1024 字符。
-- 官方识别的核心/可选字段为 `name`、`description`、`license`、`compatibility`、`metadata`；未知字段会被忽略，因此 `agent_created` 不应被用作 OpenCode 行为开关。
+- 官方识别的核心/可选字段为 `name`、`description`、`license`、`compatibility`、`metadata`；本项目另含 `category` 与 `allowed-tools`，OpenCode 按未知字段忽略，不影响加载。
 - 权限配置若为 `skill` 设置 `deny`，技能不会显示；需由用户检查 `opencode.json`。
 
 ## 验证命令

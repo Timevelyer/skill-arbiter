@@ -24,7 +24,7 @@ mkdir -p .dsh/skills && cp -R ./skill-arbiter .dsh/skills/skill-arbiter
 - 目录包必须位于扫描根的直接下一级：`<root>/<name>/SKILL.md`；不要把本技能再嵌套一层。
 - `name` 必须为 kebab-case，`description` 必需。
 - DSH 还支持 `whenToUse`、`metadata`、`disable-model-invocation`、`user-invocable`；本项目不依赖这些扩展。
-- `agent_created` 不属于 DSH 必需字段，不用于控制调用。
+- frontmatter 中不含 `agent_created`（D23 已移除）；DSH 的调用控制只依赖 `name`、`description` 与目录位置。
 
 ## 验证命令
 

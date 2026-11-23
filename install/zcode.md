@@ -17,7 +17,7 @@ mkdir -p ~/.zcode/skills && cp -R ./skill-arbiter ~/.zcode/skills/skill-arbiter
 - `name` 与 `description` 必须存在；目录名即技能名。
 - `description` 超过 1024 字符会导致整个技能被丢弃，而不是截断。
 - 当前文档说明正文超过 100KB 会截断；本项目的详细规则保留在按需引用的 `reference/` 中。
-- `agent_created` 是 WorkBuddy 扩展，不作为 ZCode 的调用配置。
+- frontmatter 中不含 `agent_created`（D23 已移除）；ZCode 的调用只依赖 `name` 与 `description`。
 
 ## 验证命令
 

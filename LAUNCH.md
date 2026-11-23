@@ -13,10 +13,11 @@
 
 ### 核心结构与许可证
 
-- [x] 21 个核心文件齐全，边界与进度为 1/21–21/21；CI 支撑文件单独列示。
+- [x] 21 个核心文件齐全；其中 20 个保留 `FILE END` / `PROGRESS` 边界与进度标记，`LICENSE` 按 D22 仅保留 MIT 正文以便 GitHub 识别许可证；CI 支撑文件单独列示。
 - [x] `README.md` 首段定位准确，第二段包含 SkillClash 与“成对兼容不代表组合兼容”。
 - [x] `LICENSE` 为完整 MIT，版权行为 `Copyright (c) 2026 skill-arbiter contributors`。
-- [x] GitHub 许可证识别为 MIT（`LICENSE` 仅含 MIT 正文，无附加元数据块）。
+- [x] GitHub 许可证识别为 MIT（`LICENSE` 仅含 MIT 正文，无附加元数据块，见 D22）。
+- [x] `v9.0.0` 标签与 GitHub Release 已创建；标签指向签收提交 `9760b1f`，其后两个提交为公开化文档与 frontmatter 变更。
 - [x] README 的 MIT 声明指向 `LICENSE`，本文件保留同一引用：[MIT License](LICENSE)。
 - [x] 所有内部链接、模板引用、安装路径和版本号经过静态检查。
 

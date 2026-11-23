@@ -21,7 +21,7 @@ mkdir -p .agents/skills && cp -R ./skill-arbiter .agents/skills/skill-arbiter
 ## Frontmatter 注意事项
 
 - `name` 与 `description` 必需，描述应前置触发任务和排除场景。
-- `agent_created: true` 不是 Codex 的核心要求，保留它不影响本项目所依赖的公共字段。
+- frontmatter 中不存在 `agent_created`（D23 已移除）；Codex 只依赖 `name` 与 `description`，其余字段按未知字段忽略。
 - 未添加 `agents/openai.yaml`，因此不声明 Codex 专有 UI、工具依赖或隐式调用策略。
 
 ## 验证命令
