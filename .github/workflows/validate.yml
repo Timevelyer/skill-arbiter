@@ -1,0 +1,332 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONIOENCODING: utf-8
+  ARBITER_SUMMARY: |
+    arbiter-summary:
+      version: "9.0.0"
+      mode: "full"
+      skills_in: 0
+      groups_out: 0
+      verdict: "human-review"
+      rules: {total: 0, kept: 0, deduped: 0, conditional: 0, deferred: 0, excluded: 0}
+      conflicts: {exclusive: 0, shared: 0, entangled: 0, contradictory: 0, dependency: 0, intent: 0}
+      severity: {S0: 0, S1: 0, S2: 0, S3: 0}
+      degraded_level: "none"
+      actionability: "none"
+      confidence: {certain: 0, high: 0, medium: 0, low: 0}
+      open_questions: ["Rubric requires human approval"]
+      appeal_path: "CI validates structure and recorded evidence, not semantic correctness"
+
+jobs:
+  frontmatter:
+    name: A. Frontmatter and YAML
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install pinned YAML parser
+        run: python -m pip install --disable-pip-version-check pyyaml==6.0.2
+      - name: Validate workflow YAML syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+          path = Path('.github/workflows/validate.yml')
+          with path.open(encoding='utf-8') as handle:
+              yaml.safe_load(handle)
+          print('Workflow YAML syntax: OK')
+          PY
+      - name: Validate every SKILL.md
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+          import yaml
+
+          errors = []
+          files = sorted(
+              (p for p in Path('.').rglob('SKILL.md') if '.git' not in p.parts),
+              key=lambda p: p.as_posix(),
+          )
+          if not files:
+              errors.append('No SKILL.md files found.')
+          for path in files:
+              text = path.read_text(encoding='utf-8')
+              lines = text.splitlines()
+              if not lines or lines[0] != '---':
+                  errors.append(f'{path}: frontmatter must start at line 1.')
+                  continue
+              try:
+                  end = lines[1:].index('---') + 1
+              except ValueError:
+                  errors.append(f'{path}: missing closing frontmatter delimiter.')
+                  continue
+              try:
+                  data = yaml.safe_load('\n'.join(lines[1:end]))
+              except yaml.YAMLError as exc:
+                  errors.append(f'{path}: invalid safe YAML: {exc}')
+                  continue
+              if not isinstance(data, dict):
+                  errors.append(f'{path}: frontmatter must be a mapping.')
+                  continue
+              name = data.get('name')
+              description = data.get('description')
+              if not isinstance(name, str) or not name:
+                  errors.append(f'{path}: name is required and must be a string.')
+              elif len(name) > 64 or not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', name):
+                  errors.append(f'{path}: invalid name format or length: {name!r}.')
+              if not isinstance(description, str) or not description.strip():
+                  errors.append(f'{path}: description is required and must be non-empty.')
+              elif len(description) > 1024:
+                  errors.append(f'{path}: description exceeds 1024 characters.')
+              print(f'{path}: checked')
+          if errors:
+              print('\n'.join(f'ERROR: {item}' for item in errors), file=sys.stderr)
+              sys.exit(1)
+          print(f'Frontmatter validation passed for {len(files)} SKILL.md file(s).')
+          PY
+
+  rubric-structure:
+    name: B. Rubric record structure
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install pinned YAML parser
+        run: python -m pip install --disable-pip-version-check pyyaml==6.0.2
+      - name: Validate recorded human scores
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import sys
+          import yaml
+
+          path = Path('tests/rubric-score.yml')
+          errors = []
+          if not path.is_file():
+              print('ERROR: missing tests/rubric-score.yml. Copy the documented schema and obtain human review.', file=sys.stderr)
+              sys.exit(1)
+          data = yaml.safe_load(path.read_text(encoding='utf-8'))
+          if not isinstance(data, dict):
+              print('ERROR: rubric score file must be a mapping.', file=sys.stderr)
+              sys.exit(1)
+          for key in ('schema_version', 'review_status', 'reviewer', 'reviewed_at', 'dimensions', 'probes'):
+              if key not in data:
+                  errors.append(f'missing field: {key}')
+          dimensions = data.get('dimensions') or {}
+          required_dimensions = (
+              'rule_preservation',
+              'worked_example_coverage',
+              'takeover_resistance',
+              'devex_readability',
+              'routing_repair_actionability',
+          )
+          scores = {}
+          for name in required_dimensions:
+              entry = dimensions.get(name)
+              if not isinstance(entry, dict):
+                  errors.append(f'missing dimension: {name}')
+                  continue
+              for key in ('score', 'evidence', 'findings'):
+                  if key not in entry:
+                      errors.append(f'{name}: missing {key}')
+              score = entry.get('score')
+              if score is not None and (isinstance(score, bool) or not isinstance(score, int) or not 1 <= score <= 5):
+                  errors.append(f'{name}: recorded score must be an integer from 1 to 5 or null while pending.')
+              elif isinstance(score, int) and not isinstance(score, bool):
+                  scores[name] = score
+          probes = data.get('probes') or {}
+          probe_states = []
+          for name in ('a_bias', 'b_bias', 'bypass_example'):
+              entry = probes.get(name)
+              if not isinstance(entry, dict) or 'status' not in entry:
+                  errors.append(f'missing probe status: {name}')
+                  continue
+              status = entry.get('status')
+              if status not in ('not-run', 'passed', 'failed'):
+                  errors.append(f'{name}: unknown probe status {status!r}')
+              else:
+                  probe_states.append(status)
+              if status in ('passed', 'failed'):
+                  for key in ('model', 'host_version', 'input', 'output', 'reviewer', 'reviewed_at'):
+                      if entry.get(key) in (None, ''):
+                          errors.append(f'{name}: executed probe requires non-empty {key}.')
+          if 'not-run' in probe_states and scores.get('takeover_resistance') == 5:
+              errors.append('takeover_resistance cannot be 5 while any probe is not-run.')
+          if errors:
+              print('\n'.join(f'ERROR: {item}' for item in errors), file=sys.stderr)
+              sys.exit(1)
+          print('Rubric record structure is valid; approval and pass thresholds are enforced by the release gate.')
+          PY
+
+  rubric-gate:
+    name: D. Release gate (v* tags)
+    if: "startsWith(github.ref, 'refs/tags/v')"
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install pinned YAML parser
+        run: python -m pip install --disable-pip-version-check pyyaml==6.0.2
+      - name: Enforce approved human rubric and recorded probes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import sys
+          import yaml
+
+          path = Path('tests/rubric-score.yml')
+          errors = []
+          if not path.is_file():
+              print('ERROR: missing tests/rubric-score.yml; the release gate cannot pass without a recorded human review.', file=sys.stderr)
+              sys.exit(1)
+          data = yaml.safe_load(path.read_text(encoding='utf-8'))
+          if not isinstance(data, dict):
+              print('ERROR: rubric score file must be a mapping.', file=sys.stderr)
+              sys.exit(1)
+          dimensions = data.get('dimensions') or {}
+          required_dimensions = (
+              'rule_preservation',
+              'worked_example_coverage',
+              'takeover_resistance',
+              'devex_readability',
+              'routing_repair_actionability',
+          )
+          scores = {}
+          for name in required_dimensions:
+              entry = dimensions.get(name)
+              if not isinstance(entry, dict):
+                  errors.append(f'missing dimension: {name}')
+                  continue
+              score = entry.get('score')
+              if isinstance(score, bool) or not isinstance(score, int) or not 1 <= score <= 5:
+                  errors.append(f'{name}: release requires a recorded integer score from 1 to 5.')
+              else:
+                  scores[name] = score
+          probes = data.get('probes') or {}
+          for name in ('a_bias', 'b_bias', 'bypass_example'):
+              entry = probes.get(name)
+              if not isinstance(entry, dict):
+                  errors.append(f'missing probe: {name}')
+                  continue
+              status = entry.get('status')
+              if status not in ('passed', 'failed'):
+                  errors.append(f'{name}: release requires an executed probe with status passed or failed.')
+              else:
+                  for key in ('model', 'host_version', 'input', 'output', 'reviewer', 'reviewed_at'):
+                      if entry.get(key) in (None, ''):
+                          errors.append(f'{name}: executed probe requires non-empty {key}.')
+          if data.get('review_status') != 'approved':
+              errors.append('human review is not approved; complete the manual rubric gate instead of inventing scores.')
+          else:
+              if not isinstance(data.get('reviewer'), str) or not data.get('reviewer').strip():
+                  errors.append('approved review requires a real reviewer identifier.')
+              if not data.get('reviewed_at'):
+                  errors.append('approved review requires reviewed_at.')
+          if len(scores) == 5:
+              average = sum(scores.values()) / 5
+              print(f'Recorded rubric average: {average:.2f}')
+              if average < 4.0:
+                  errors.append(f'rubric average {average:.2f} is below 4.0.')
+              for name, score in scores.items():
+                  if score < 3:
+                      errors.append(f'{name} score {score} is below 3.')
+          else:
+              errors.append('release requires all five dimension scores.')
+          if errors:
+              print('\n'.join(f'ERROR: {item}' for item in errors), file=sys.stderr)
+              sys.exit(1)
+          print('Release gate passed: approved human rubric and complete probe evidence recorded.')
+          PY
+
+
+  golden:
+    name: C. Deterministic golden regression
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install pinned YAML parser
+        run: python -m pip install --disable-pip-version-check pyyaml==6.0.2
+      - name: Compare current fixtures with reviewed baselines
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import difflib
+          import sys
+          import yaml
+
+          current_root = Path('tests/fixtures')
+          golden_root = Path('tests/golden')
+          change_log = golden_root / 'change-log.yml'
+          errors = []
+          if not current_root.is_dir() or not golden_root.is_dir():
+              print('ERROR: create tests/fixtures and tests/golden, then add reviewed baselines.', file=sys.stderr)
+              sys.exit(1)
+          current = {
+              p.relative_to(current_root).as_posix(): p
+              for p in current_root.rglob('*') if p.is_file()
+          }
+          golden = {
+              p.relative_to(golden_root).as_posix(): p
+              for p in golden_root.rglob('*')
+              if p.is_file() and p.name not in ('README.md', 'change-log.yml')
+          }
+          if not golden:
+              errors.append('golden baseline is empty; copy a reviewed current artifact and register it in change-log.yml.')
+          for name in sorted(current.keys() - golden.keys()):
+              errors.append(f'{name}: golden missing; review and initialize the baseline explicitly.')
+          for name in sorted(golden.keys() - current.keys()):
+              errors.append(f'{name}: current fixture missing; restore it or register an explained removal.')
+          if not change_log.is_file():
+              errors.append('missing tests/golden/change-log.yml.')
+              entries = []
+          else:
+              entries = yaml.safe_load(change_log.read_text(encoding='utf-8')) or []
+          if not isinstance(entries, list):
+              errors.append('change-log.yml must contain a list of change records.')
+              entries = []
+          registered = {
+              entry.get('file') for entry in entries
+              if isinstance(entry, dict) and isinstance(entry.get('file'), str)
+          }
+          for name in sorted(golden):
+              if name not in registered:
+                  errors.append(f'{name}: no explicit golden change registration.')
+          for entry in entries:
+              if not isinstance(entry, dict):
+                  errors.append('change-log entries must be mappings.')
+                  continue
+              for key in ('file', 'change', 'source_case', 'reviewer', 'reviewed_at', 'evidence'):
+                  if key not in entry or entry.get(key) in (None, ''):
+                      errors.append(f'change-log entry {entry.get("file", "<unknown>")}: missing {key}.')
+          for name in sorted(current.keys() & golden.keys()):
+              before = golden[name].read_text(encoding='utf-8').replace('\r\n', '\n')
+              after = current[name].read_text(encoding='utf-8').replace('\r\n', '\n')
+              if before != after:
+                  diff = ''.join(difflib.unified_diff(
+                      before.splitlines(keepends=True),
+                      after.splitlines(keepends=True),
+                      fromfile=f'golden/{name}',
+                      tofile=f'current/{name}',
+                  ))
+                  print(diff, file=sys.stderr)
+                  errors.append(f'{name}: unexpected difference; fix the artifact or register and review a golden update.')
+          if errors:
+              print('\n'.join(f'ERROR: {item}' for item in errors), file=sys.stderr)
+              sys.exit(1)
+          print(f'Golden regression passed for {len(golden)} file(s); no semantic model evaluation was performed.')
+          PY
+
+# YAML 语法要求优先；以下两行以 YAML 注释保留规定的文件边界元数据。
+# <!-- FILE END: .github/workflows/validate.yml -->
+# <!-- PROGRESS: 18/21 -->

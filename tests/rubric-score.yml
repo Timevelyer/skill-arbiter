@@ -1,0 +1,53 @@
+schema_version: "1.0"
+review_status: "pending"
+reviewer: null
+reviewed_at: null
+dimensions:
+  rule_preservation:
+    score: null
+    evidence: "pending-human-review"
+    findings: []
+  worked_example_coverage:
+    score: null
+    evidence: "pending-human-review"
+    findings: []
+  takeover_resistance:
+    score: null
+    evidence: "pending-human-review; probes not-run"
+    findings: []
+  devex_readability:
+    score: null
+    evidence: "pending-human-review"
+    findings: []
+  routing_repair_actionability:
+    score: null
+    evidence: "pending-human-review"
+    findings: []
+probes:
+  a_bias:
+    status: "not-run"
+    model: null
+    host_version: null
+    input: null
+    output: null
+    reviewer: null
+    reviewed_at: null
+  b_bias:
+    status: "not-run"
+    model: null
+    host_version: null
+    input: null
+    output: null
+    reviewer: null
+    reviewed_at: null
+  bypass_example:
+    status: "not-run"
+    model: null
+    host_version: null
+    input: null
+    output: null
+    reviewer: null
+    reviewed_at: null
+notes:
+  - "This file intentionally fails the release gate until a real human review is recorded."
+  - "Do not replace null scores with invented values to make CI pass."

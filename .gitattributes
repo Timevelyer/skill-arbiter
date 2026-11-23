@@ -1,0 +1,14 @@
+# Normalize text to LF so the deterministic golden regression is byte-stable
+# across Windows, macOS, and Linux checkouts.
+* text=auto eol=lf
+
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+
+*.zip  binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary

@@ -1,0 +1,22 @@
+# Operating system
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Packaging output
+dist/
+*.zip
+*.tar.gz
+
+# Local logs
+*.log

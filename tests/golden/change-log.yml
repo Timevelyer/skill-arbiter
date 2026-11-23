@@ -1,0 +1,6 @@
+- file: "basic-merge.md"
+  change: "Initial deterministic structural fixture; no semantic correctness or model behavior is claimed."
+  source_case: "structural-fixture"
+  reviewer: "automated-bootstrap"
+  reviewed_at: "2026-11-23"
+  evidence: "Synthetic fixture authored from the V9.0 output schema; human semantic review remains pending."
